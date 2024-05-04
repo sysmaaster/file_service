@@ -35,7 +35,7 @@ app.get("/file", (req: Request, res: Response, next: NextFunction) => {
     res.write(
       '<form action="/upload" method="POST" enctype="multipart/form-data" style="padding: 10px;">'
     );
-    res.write('<input type="file" name="file" multiple >');
+    res.write('<input type="file" name="file" >');
     res.write('<input type="submit">');
     res.write("</form>");
     res.end();
