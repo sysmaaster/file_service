@@ -45,13 +45,14 @@ app.get("/file", (req: Request, res: Response, next: NextFunction) => {
 app.post("/upload", async (req: Request, res: Response) => {
   try {
     await uploadFile(req, res);
-    if (req.files == undefined) {
+    if (req.file == undefined) {
+    log.error( "Please upload a file!");
       return res.status(400).send({ message: "Please upload a file!" });
     }
     res.status(200).send({
-      message: "Uploaded the file successfully: ",
+      message: `Uploaded the file successfully: ${req.file.filename}`,
     });
-    log.info("Uploaded the file successfully"); //+ req.files.originalname,
+    log.info("Uploaded the file successfully " + req.file.filename); //+ req.files.originalname,
   } catch (err) {
     log.error(err, "upload file");
     res.status(500).send({
@@ -62,7 +63,7 @@ app.post("/upload", async (req: Request, res: Response) => {
 app.get("/files", (req: Request, res: Response) => {
   const _basedir = path.resolve(path.resolve(), "static");
   const directoryPath = path.resolve(_basedir, "uploads");
-  const baseUrl = "http://localhost:3000/files/";
+  const baseUrl = "http://localhost:3658/files/";
 
   fs.readdir(directoryPath, function (err, files) {
     if (err) {
@@ -104,14 +105,15 @@ app.delete("/files/:name", (req: Request, res: Response) => {
   const _basedir = path.resolve(path.resolve(), "static");
   const directoryPath = path.resolve(_basedir, "uploads");
 
-  fs.unlink(directoryPath + fileName, (err) => {
+  fs.unlink(path.resolve(directoryPath , fileName), (err) => {
     if (err) {
-      log.error(err, "remove file");
+      log.error(err, "remove file error");
       res.status(500).send({
         message: "Could not delete the file. " + err,
       });
+      return
     }
-    log.info("File is deleted.");
+    log.info(fileName ,"File is deleted.");
     res.status(200).send({
       message: "File is deleted.",
     });
@@ -123,9 +125,9 @@ app.delete("/filess/:name", (req: Request, res: Response) => {
   const directoryPath = path.resolve(_basedir, "uploads");
 
   try {
-    fs.unlinkSync(directoryPath + fileName);
+    fs.unlinkSync(path.resolve(directoryPath , fileName));
 
-    log.info("File is deleted.");
+    log.info(fileName, "File is deleted.");
     res.status(200).send({
       message: "File is deleted.",
     });
